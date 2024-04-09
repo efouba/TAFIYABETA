@@ -6,6 +6,8 @@ use App\Repository\RetaillerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: RetaillerRepository::class)]
 class Retailler
@@ -13,54 +15,82 @@ class Retailler
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["getRetailler"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom  est obligatoire")]
+    #[Groups(["getRetailler"])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom de gps est obligatoire")]
+    #[Groups(["getRetailler"])]
     private ?string $gps = null;
 
     #[ORM\Column]
+    #[Groups(["getRetailler"])]
+    #[Assert\NotBlank(message: "Le nom de Choffre d'affaire est obligatoire")]
     private ?int $monthlyCA = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom du quartier est obligatoire")]
+    #[Groups(["getRetailler"])]
     private ?string $quarter = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le lieu est obligatoire")]
+    #[Groups(["getRetailler"])]
     private ?string $placeSaid = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: "Le est interesse est obligatoire")]
+    #[Groups(["getRetailler"])]
     private ?bool $tafiyaInterest = null;
 
     #[ORM\Column]
+    #[Groups(["getRetailler"])]
     private ?bool $existSupplier = null;
 
     #[ORM\Column]
+    #[Groups(["getRetailler"])]
     private ?bool $takeToMarket = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["getRetailler"])]
     private ?string $country = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["getRetailler"])]
+    #[Assert\NotBlank(message: "Le nom numero de telephone 1 est obligatoire")]
     private ?string $phoneOne = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(["getRetailler"])]
     private ?string $phoneTwo = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotBlank(message: "Le nom  de la ville est obligatoire")]
+    private ?string $ville = null;
 
-    #[ORM\ManyToOne(inversedBy: 'retaillers')]
-    private ?Supplier $supplier = null;
-
+    #[ORM\ManyToOne(inversedBy: 'user')]
+    #[Groups(["getRetailler"])]
+    private ?User $user = null;
     #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'retailler')]
     private Collection $product;
 
-    #[ORM\ManyToOne(inversedBy: 'retaillers')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?CensusTaker $censusTaker = null;
+    
+
+    /**
+     * @var Collection<int, Supplier>
+     */
+    #[ORM\OneToMany(targetEntity: Supplier::class, mappedBy: 'retailler')]
+    #[Groups(["getRetailler"])]
+    private Collection $supplier;
 
     public function __construct()
     {
         $this->product = new ArrayCollection();
+        $this->supplier = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -200,18 +230,6 @@ class Retailler
         return $this;
     }
 
-    public function getSupplier(): ?Supplier
-    {
-        return $this->supplier;
-    }
-
-    public function setSupplier(?Supplier $supplier): static
-    {
-        $this->supplier = $supplier;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Product>
      */
@@ -242,14 +260,57 @@ class Retailler
         return $this;
     }
 
-    public function getCensusTaker(): ?CensusTaker
+
+    public function getVille(): ?string
     {
-        return $this->censusTaker;
+        return $this->ville;
     }
 
-    public function setCensusTaker(?CensusTaker $censusTaker): static
+    public function setVille(string $Ville): static
     {
-        $this->censusTaker = $censusTaker;
+        $this->ville = $Ville;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Supplier>
+     */
+    public function getSupplier(): Collection
+    {
+        return $this->supplier;
+    }
+
+    public function addSupplier(Supplier $supplier): static
+    {
+        if (!$this->supplier->contains($supplier)) {
+            $this->supplier->add($supplier);
+            $supplier->setRetailler($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSupplier(Supplier $supplier): static
+    {
+        if ($this->supplier->removeElement($supplier)) {
+            // set the owning side to null (unless already changed)
+            if ($supplier->getRetailler() === $this) {
+                $supplier->setRetailler(null);
+            }
+        }
 
         return $this;
     }

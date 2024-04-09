@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: SupplierRepository::class)]
 class Supplier
@@ -14,30 +15,32 @@ class Supplier
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["getSupplier"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["getSupplier"])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["getSupplier"])]
     private ?string $hisLastness = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(["getSupplier"])]
     private ?string $functioning = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["getSupplier"])]
     private ?string $place = null;
 
     #[ORM\Column]
+    #[Groups(["getSupplier"])]
     private ?int $transportCost = null;
 
-    #[ORM\OneToMany(targetEntity: Retailler::class, mappedBy: 'supplier')]
-    private Collection $retaillers;
-
-    public function __construct()
-    {
-        $this->retaillers = new ArrayCollection();
-    }
+    #[ORM\ManyToOne(inversedBy: 'supplier')]
+    #[Groups(["getSupplier"])]
+    private ?Retailler $retailler = null;
 
     public function getId(): ?int
     {
@@ -104,33 +107,16 @@ class Supplier
         return $this;
     }
 
-    /**
-     * @return Collection<int, Retailler>
-     */
-    public function getRetaillers(): Collection
+    public function getRetailler(): ?Retailler
     {
-        return $this->retaillers;
+        return $this->retailler;
     }
 
-    public function addRetailler(Retailler $retailler): static
+    public function setRetailler(?Retailler $retailler): static
     {
-        if (!$this->retaillers->contains($retailler)) {
-            $this->retaillers->add($retailler);
-            $retailler->setSupplier($this);
-        }
+        $this->retailler = $retailler;
 
         return $this;
     }
-
-    public function removeRetailler(Retailler $retailler): static
-    {
-        if ($this->retaillers->removeElement($retailler)) {
-            // set the owning side to null (unless already changed)
-            if ($retailler->getSupplier() === $this) {
-                $retailler->setSupplier(null);
-            }
-        }
-
-        return $this;
-    }
+   
 }

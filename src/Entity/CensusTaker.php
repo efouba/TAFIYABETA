@@ -30,14 +30,6 @@ class CensusTaker
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
-    #[ORM\OneToMany(targetEntity: Retailler::class, mappedBy: 'censusTaker')]
-    private Collection $retaillers;
-
-    public function __construct()
-    {
-        $this->retaillers = new ArrayCollection();
-    }
-
     public function getId(): ?int
     {
         return $this->id;
@@ -106,30 +98,6 @@ class CensusTaker
     /**
      * @return Collection<int, Retailler>
      */
-    public function getRetaillers(): Collection
-    {
-        return $this->retaillers;
-    }
+    
 
-    public function addRetailler(Retailler $retailler): static
-    {
-        if (!$this->retaillers->contains($retailler)) {
-            $this->retaillers->add($retailler);
-            $retailler->setCensusTaker($this);
-        }
-
-        return $this;
-    }
-
-    public function removeRetailler(Retailler $retailler): static
-    {
-        if ($this->retaillers->removeElement($retailler)) {
-            // set the owning side to null (unless already changed)
-            if ($retailler->getCensusTaker() === $this) {
-                $retailler->setCensusTaker(null);
-            }
-        }
-
-        return $this;
-    }
 }
