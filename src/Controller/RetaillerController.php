@@ -46,11 +46,10 @@ class RetaillerController extends AbstractController
     }
 
      
-     #[Route("/api/detaillant", name:"add_detaillant", methods:["POST"])]
-     
+    #[Route("/api/detaillant", name:"add_detaillant", methods:["POST"])]
     public function addDetaillant( RetaillerRepository $retaillerRepository, Request $request,
-     SerializerSerializerInterface $serializer, ValidatorInterface $validator ,EntityManagerInterface $en,
-    UrlGeneratorInterface $urlGenerator
+        SerializerSerializerInterface $serializer, ValidatorInterface $validator ,EntityManagerInterface $en,
+        UrlGeneratorInterface $urlGenerator
      ): JsonResponse
     {
         // Récupérer l'utilisateur actuellement authentifié

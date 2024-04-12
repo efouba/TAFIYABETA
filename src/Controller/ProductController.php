@@ -107,25 +107,25 @@ class ProductController extends AbstractController
 
         $product = $ProductRepository->find($id);
         if (!$product) {
-            return new JsonResponse(['error' => 'Fournisseur not found'], 404);
+            return new JsonResponse(['error' => 'Produit Nin trouve'], 404);
         }
-         // Vérifier si le fournisseur est associé au détaillant enregistré par le recenseur
-    if (!$this->isProductAssociatedToRecenseur($product, $recenseur)) {
-        return new JsonResponse(['error' => 'Unauthorized'], JsonResponse::HTTP_UNAUTHORIZED);
-    }
-    $data = json_decode($request->getContent(), true);
-    $product->setDesignation($data['designation']);
-    $product->setQuantity($data['quantity']);
+         // Vérifier si le produit est associé au détaillant enregistré par le recenseur
+        if (!$this->isProductAssociatedToRecenseur($product, $recenseur)) {
+             return new JsonResponse(['error' => 'Unauthorized'], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+        $data = json_decode($request->getContent(), true);
+        $product->setDesignation($data['designation']);
+        $product->setQuantity($data['quantity']);
     if (isset($data['delivery_at'])) {
         // Transformez la chaîne de date en objet DateTime et attribuez-la à l'entité
         $dateCreation = new \DateTimeImmutable($data['delivery_at']);
         $product->setDeliveryAt($dateCreation);
     }
 
-    $errors = $validator->validate($product);
-    if (count($errors) > 0) {
-        return new JsonResponse($errors, JsonResponse::HTTP_BAD_REQUEST);
-    }
+        $errors = $validator->validate($product);
+        if (count($errors) > 0) {
+             return new JsonResponse($errors, JsonResponse::HTTP_BAD_REQUEST);
+        }
 
         // Modifier une information spécifique du détaillant
         // $detaillant->setName($data['name']);
@@ -135,27 +135,27 @@ class ProductController extends AbstractController
         return new JsonResponse(['message' => 'Produit information updated successfully']);
      }
      private function isProductAssociatedToRecenseur(Product $product, $recenseur): bool
-{
-    // Implémenter la logique pour vérifier si le fournisseur est associé au détaillant enregistré par le recenseur
-    // Par exemple, vous pouvez vérifier si le détaillant du fournisseur appartient au recenseur
-    $detaillant = $product->getRetailler();
-    if ($detaillant && $detaillant->getUser() === $recenseur) {
-        return true;
+    {
+        // Par exemple, vous pouvez vérifier si le détaillant du produit appartient au recenseur
+         $detaillant = $product->getRetailler();
+        if ($detaillant && $detaillant->getUser() === $recenseur) {
+
+             return true;
+        }
+     return false;
     }
-    return false;
-}
 
 #[Route('/api/product/{id}', name: 'delete_product', methods: ['DELETE'])]
 public function deleteDetaillant(int $id, ProductRepository $productRepository,EntityManagerInterface $entityManager): JsonResponse
 {
     $supplier = $productRepository->find($id);
     if (!$supplier) {
-        return new JsonResponse(['error' => 'product not found'], 404);
+        return new JsonResponse(['error' => 'produit non trouve'], 404);
     }
 
     $entityManager->remove($supplier);
     $entityManager->flush();
 
-    return new JsonResponse(['message' => 'product deleted successfully']);
+    return new JsonResponse(['message' => 'produit suprime avec succes ']);
 }
 }
