@@ -250,6 +250,12 @@
             "./tests/bootstrap.php"
         ]
     },
+    "symfony/requirements-checker": {
+        "version": "2.0",
+        "recipe": {
+            "version": "2.0"
+        }
+    },
     "symfony/routing": {
         "version": "7.0",
         "recipe": {
