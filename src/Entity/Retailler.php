@@ -31,7 +31,7 @@ class Retailler
 
     #[ORM\Column]
     #[Groups(["getRetailler"])]
-    #[Assert\NotBlank(message: "Le nom de Choffre d'affaire est obligatoire")]
+    #[Assert\NotBlank(message: "Le nom de Chiffre d'affaire est obligatoire")]
     private ?int $monthlyCA = null;
 
     #[ORM\Column(length: 255)]
@@ -45,20 +45,23 @@ class Retailler
     private ?string $placeSaid = null;
 
     #[ORM\Column]
-    #[Assert\NotBlank(message: "Le est interesse est obligatoire")]
+    #[Assert\NotBlank(message: "Le Champ est interesse est obligatoire")]
     #[Groups(["getRetailler"])]
     private ?bool $tafiyaInterest = null;
 
     #[ORM\Column]
     #[Groups(["getRetailler"])]
+    #[Assert\NotBlank(message: "Le Champ  A-til un Founisseur est obligatoire")]
     private ?bool $existSupplier = null;
 
     #[ORM\Column]
     #[Groups(["getRetailler"])]
+    #[Assert\NotBlank(message: "Ce Champ est obligatoire")]
     private ?bool $takeToMarket = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(["getRetailler"])]
+    #[Assert\NotBlank(message: "Le nom  du Pays est obligatoire")]
     private ?string $country = null;
 
     #[ORM\Column(length: 255)]
@@ -74,7 +77,7 @@ class Retailler
     private ?string $ville = null;
 
     #[ORM\ManyToOne(inversedBy: 'user')]
-    #[Groups(["getRetailler"])]
+    #[Groups(["getRetailler","GetUser"])]
     private ?User $user = null;
     #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'retailler')]
     private Collection $product;

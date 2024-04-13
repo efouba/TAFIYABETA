@@ -3,4 +3,4 @@ lexik_jwt_authentication:
     public_key: '%env(resolve:JWT_PUBLIC_KEY)%'
     pass_phrase: '%env(JWT_PASSPHRASE)%'
     user_identity_field: login # Remplacez par le champ que vous utilisez pour identifier l'utilisateur
-    token_ttl: 86400 # Durée de vie du token en secondes
+    token_ttl:  5184000 # Durée de vie du token en secondes

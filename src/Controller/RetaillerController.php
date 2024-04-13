@@ -126,9 +126,13 @@ class RetaillerController extends AbstractController
 
     public function updateDetaillantInfo(
         Request $request, int $id,RetaillerRepository $retaillerRepository
-        ,Retailler $currentRetailler,SerializerInterface $serializer,EntityManagerInterface $em,UserRepository $userRepository): JsonResponse
+        ,Retailler $currentRetailler,SerializerInterface $serializer,
+        Security $security,EntityManagerInterface $em,UserRepository $userRepository
+        ,ValidatorInterface $validator): JsonResponse
     {
-       
+       // Récupérer l'utilisateur connecté (recenseur)
+       $recenseur = $security->getUser();
+
         $data = json_decode($request->getContent(), true);
 
         $detaillant = $retaillerRepository->find($id);
@@ -136,12 +140,40 @@ class RetaillerController extends AbstractController
             return new JsonResponse(['error' => 'Detaillant not found'], 404);
         }
 
+         // Vérifier si le fournisseur est associé au détaillant enregistré par le recenseur
+    // if (!$this->isRetaillerAssociatedToRecenseur($detaillant, $recenseur)) {
+    //     return new JsonResponse(['error' => 'Unauthorized'], JsonResponse::HTTP_UNAUTHORIZED);
+    // }   
+    $data = json_decode($request->getContent(), true);
         // Modifier une information spécifique du détaillant
-        // $detaillant->setName($data['name']);
-        // $detaillant->setCountry($data['contry']);
-        $em->persist($detaillant);
-        $em->flush();
+         $detaillant->setName($data['name']);
+         $detaillant->setCountry($data['country']);
+         $detaillant->setGps($data['gps']);
+         $detaillant->setMonthlyCA($data['monthly_ca']);
+         $detaillant->setQuarter($data['quarter']);
+         $detaillant->setPlaceSaid($data['place_said']);
+         $detaillant->setTafiyaInterest($data['tafiya_interest']);
+         $detaillant->setExistSupplier($data['exist_supplier']);
+         $detaillant->setTakeToMarket($data['take_to_market']);
+         $detaillant->setPhoneOne($data['country']);
+         $detaillant->setPhoneTwo($data['phoneTwo']);
+         $detaillant->setVille($data['ville']);
+         $detaillant->setPicture($data['picture']);
 
-        return new JsonResponse(['message' => 'Detaillant information updated successfully']);
-     }
+         $errors = $validator->validate($detaillant);
+         if (count($errors) > 0) {
+             return new JsonResponse($errors, JsonResponse::HTTP_BAD_REQUEST);
+         }
+       // $em->persist($detaillant);
+        $em->flush();
+        return new JsonResponse(['message' => 'Retailer information updated successfully']);
+    }
+    // private function isRetaillerAssociatedToRecenseur(Retailler $detaillant, $recenseur): bool
+    // {
+    //     $detaillant = $detaillant->getUser();
+    //     if ($detaillant && $detaillant->getUser() === $recenseur) {
+    //     return true;
+    //     }
+    // return false;
+    // }
 }
